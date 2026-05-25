@@ -1,0 +1,374 @@
+// Kwisoko Marketplace — Prisma Schema
+// Stack: PostgreSQL + Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────
+
+enum Role {
+  BUYER
+  SELLER
+  ADMIN
+}
+
+enum SellerStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  BANNED
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  SOLD
+  REMOVED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  MOMO
+  CARD
+  CASH
+}
+
+enum NotificationType {
+  ORDER
+  MESSAGE
+  REVIEW
+  SYSTEM
+  PAYMENT
+}
+
+enum ReportReason {
+  SCAM
+  FAKE_PRODUCT
+  INAPPROPRIATE
+  SPAM
+  OTHER
+}
+
+// ─────────────────────────────────────────
+// USERS
+// ─────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  phone         String?   @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  avatar        String?
+  role          Role      @default(BUYER)
+  isVerified    Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  otpCode       String?
+  otpExpiresAt  DateTime?
+  refreshToken  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  seller        Seller?
+  orders        Order[]
+  sentMessages  Message[]     @relation("SentMessages")
+  notifications Notification[]
+  reviews       Review[]
+  reports       Report[]      @relation("ReportedBy")
+  favorites     Favorite[]
+  adminLogs     AdminLog[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────
+// SELLERS
+// ─────────────────────────────────────────
+
+model Seller {
+  id            String       @id @default(cuid())
+  userId        String       @unique
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName  String
+  description   String?
+  idDocumentUrl String?
+  location      String?
+  status        SellerStatus @default(PENDING)
+  isSubscribed  Boolean      @default(false)
+  rating        Float        @default(0)
+  totalSales    Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  products      Product[]
+  subscriptions Subscription[]
+  chats         Chat[]
+
+  @@map("sellers")
+}
+
+// ─────────────────────────────────────────
+// CATEGORIES
+// ─────────────────────────────────────────
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  iconUrl     String?
+  parentId    String?
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  products    Product[]
+  createdAt   DateTime   @default(now())
+
+  @@map("categories")
+}
+
+// ─────────────────────────────────────────
+// PRODUCTS
+// ─────────────────────────────────────────
+
+model Product {
+  id           String        @id @default(cuid())
+  sellerId     String
+  seller       Seller        @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  categoryId   String
+  category     Category      @relation(fields: [categoryId], references: [id])
+  title        String
+  description  String
+  priceRwf     Float
+  priceUsd     Float?
+  stock        Int           @default(1)
+  location     String?
+  status       ProductStatus @default(DRAFT)
+  viewCount    Int           @default(0)
+  isFeatured   Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  images       ProductImage[]
+  orderItems   OrderItem[]
+  reviews      Review[]
+  favorites    Favorite[]
+  reports      Report[]      @relation("ReportedProduct")
+
+  @@map("products")
+}
+
+model ProductImage {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url        String
+  publicId   String   // Cloudinary public_id
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("product_images")
+}
+
+// ─────────────────────────────────────────
+// ORDERS & PAYMENTS
+// ─────────────────────────────────────────
+
+model Order {
+  id          String      @id @default(cuid())
+  buyerId     String
+  buyer       User        @relation(fields: [buyerId], references: [id])
+  status      OrderStatus @default(PENDING)
+  totalRwf    Float
+  totalUsd    Float?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  items       OrderItem[]
+  payment     Payment?
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String   @id @default(cuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  quantity   Int      @default(1)
+  priceRwf   Float
+  priceUsd   Float?
+
+  @@map("order_items")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id])
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  amountRwf     Float
+  amountUsd     Float?
+  transactionId String?
+  momoPhone     String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+// ─────────────────────────────────────────
+// CHATS & MESSAGES
+// ─────────────────────────────────────────
+
+model Chat {
+  id        String    @id @default(cuid())
+  sellerId  String
+  seller    Seller    @relation(fields: [sellerId], references: [id])
+  buyerId   String
+  createdAt DateTime  @default(now())
+
+  messages  Message[]
+
+  @@unique([sellerId, buyerId])
+  @@map("chats")
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  chatId     String
+  chat       Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("messages")
+}
+
+// ─────────────────────────────────────────
+// REVIEWS
+// ─────────────────────────────────────────
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int      // 1–5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@unique([productId, userId])
+  @@map("reviews")
+}
+
+// ─────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@map("notifications")
+}
+
+// ─────────────────────────────────────────
+// SUBSCRIPTIONS
+// ─────────────────────────────────────────
+
+model Subscription {
+  id        String   @id @default(cuid())
+  sellerId  String
+  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  plan      String   // "basic" | "pro" | "premium"
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("subscriptions")
+}
+
+// ─────────────────────────────────────────
+// REPORTS
+// ─────────────────────────────────────────
+
+model Report {
+  id          String       @id @default(cuid())
+  reporterId  String
+  reporter    User         @relation("ReportedBy", fields: [reporterId], references: [id])
+  productId   String?
+  product     Product?     @relation("ReportedProduct", fields: [productId], references: [id])
+  reason      ReportReason
+  description String?
+  isResolved  Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  @@map("reports")
+}
+
+// ─────────────────────────────────────────
+// FAVORITES
+// ─────────────────────────────────────────
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@map("favorites")
+}
+
+// ─────────────────────────────────────────
+// ADMIN LOGS
+// ─────────────────────────────────────────
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     User     @relation(fields: [adminId], references: [id])
+  action    String
+  target    String?
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@map("admin_logs")
+}

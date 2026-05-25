@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kwisoko Marketplace — Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #030712;
+      color: #e2e8f0;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── Scrollbar ─────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+
+    /* ─── Navbar ────────────────────────────────────────────────── */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(3, 7, 18, 0.85);
+      border-bottom: 1px solid #1e293b;
+    }
+    .navbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+    }
+    .nav-links a {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #94a3b8;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover {
+      color: #e2e8f0;
+      background: #1e293b;
+    }
+    .nav-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: rgba(99,102,241,0.15);
+      color: #818cf8;
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* ─── Layout ────────────────────────────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    section { padding: 80px 0; }
+
+    /* ─── Section Headings ──────────────────────────────────────── */
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6366f1;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      border-left: 3px solid #6366f1;
+      padding-left: 16px;
+      margin-bottom: 8px;
+    }
+    .section-desc {
+      color: #64748b;
+      font-size: 1rem;
+      padding-left: 19px;
+      margin-bottom: 48px;
+    }
+
+    /* ─── Hero ──────────────────────────────────────────────────── */
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        #030712 0%,
+        #0f0a2e 20%,
+        #0a1628 40%,
+        #0d1f0d 60%,
+        #1a0a0a 80%,
+        #030712 100%
+      );
+      background-size: 400% 400%;
+      animation: gradientShift 12s ease infinite;
+      z-index: 0;
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 1;
+    }
+    .hero-glow {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      width: 100%;
+      padding: 120px 24px 80px;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #a5b4fc;
+      margin-bottom: 32px;
+    }
+    .hero-eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      background: #6366f1;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+    .hero-title {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: #64748b;
+      margin-bottom: 48px;
+      font-weight: 400;
+    }
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 56px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .badge-indigo  { background: rgba(99,102,241,0.12); color: #a5b4fc; border-color: rgba(99,102,241,0.3); }
+    .badge-red     { background: rgba(239,68,68,0.12);  color: #fca5a5; border-color: rgba(239,68,68,0.3); }
+    .badge-blue    { background: rgba(59,130,246,0.12); color: #93c5fd; border-color: rgba(59,130,246,0.3); }
+    .badge-teal    { background: rgba(20,184,166,0.12); color: #5eead4; border-color: rgba(20,184,166,0.3); }
+    .badge-amber   { background: rgba(245,158,11,0.12); color: #fcd34d; border-color: rgba(245,158,11,0.3); }
+    .badge-green   { background: rgba(34,197,94,0.12);  color: #86efac; border-color: rgba(34,197,94,0.3); }
+    .badge-purple  { background: rgba(168,85,247,0.12); color: #d8b4fe; border-color: rgba(168,85,247,0.3); }
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-stat-label { font-size: 0.8rem; color: #475569; font-weight: 500; }
+
+    /* ─── Cards ─────────────────────────────────────────────────── */
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 24px;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(99,102,241,0.15);
+      border-color: rgba(99,102,241,0.3);
+    }
+
+    /* ─── Code Blocks ───────────────────────────────────────────── */
+    .code-block {
+      background: #0d1117;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .code-block-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+    }
+    .code-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .code-dot-red    { background: #ff5f57; }
+    .code-dot-yellow { background: #febc2e; }
+    .code-dot-green  { background: #28c840; }
+    .code-block-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #475569;
+      margin-left: 8px;
+    }
+    .code-block pre {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      color: #c9d1d9;
+    }
+    .dir     { color: #79c0ff; }
+    .file    { color: #a5d6ff; }
+    .comment { color: #6e7681; font-style: italic; }
+    .tree-root { color: #f0883e; font-weight: 600; }
+    .tree-sym  { color: #30363d; }
+
+    /* ─── Grid helpers ──────────────────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+
+    /* ─── Database Tags ─────────────────────────────────────────── */
+    .tag-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .tag {
+      padding: 6px 14px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .tag:hover {
+      background: rgba(99,102,241,0.1);
+      border-color: rgba(99,102,241,0.4);
+      color: #a5b4fc;
+    }
+
+    /* ─── User Flows ────────────────────────────────────────────── */
+    .flows-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .flow-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 28px 24px;
+    }
+    .flow-card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .flow-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .flow-icon-indigo { background: rgba(99,102,241,0.15); }
+    .flow-icon-amber  { background: rgba(245,158,11,0.15); }
+    .flow-icon-red    { background: rgba(239,68,68,0.15); }
+    .flow-steps { display: flex; flex-direction: column; gap: 0; }
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      position: relative;
+    }
+    .flow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 32px;
+      width: 2px;
+      height: calc(100% - 8px);
+      background: linear-gradient(to bottom, #1e293b, transparent);
+    }
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .step-circle-indigo { background: rgba(99,102,241,0.2); color: #818cf8; border: 1px solid rgba(99,102,241,0.4); }
+    .step-circle-amber  { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+    .step-circle-red    { background: rgba(239,68,68,0.2);  color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+    .step-content { padding: 4px 0 24px; }
+    .step-title { font-size: 0.875rem; font-weight: 600; color: #e2e8f0; }
+    .step-desc  { font-size: 0.78rem; color: #475569; margin-top: 2px; }
+
+    /* ─── API Table ─────────────────────────────────────────────── */
+    .api-table-wrap {
+      background: #0d1117;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .api-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .api-table thead tr {
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+    }
+    .api-table th {
+      padding: 14px 20px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #475569;
+    }
+    .api-table td {
+      padding: 14px 20px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #0f172a;
+      vertical-align: middle;
+    }
+    .api-table tbody tr:hover { background: rgba(99,102,241,0.04); }
+    .api-table tbody tr:last-child td { border-bottom: none; }
+    .method {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .get    { background: #064e3b; color: #6ee7b7; }
+    .post   { background: #1e3a8a; color: #93c5fd; }
+    .put    { background: #78350f; color: #fcd34d; }
+    .delete { background: #7f1d1d; color: #fca5a5; }
+    .endpoint {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #a5d6ff;
+    }
+    .endpoint-desc { color: #64748b; font-size: 0.82rem; }
+    .auth-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: rgba(245,158,11,0.1);
+      color: #fbbf24;
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+    .admin-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: rgba(239,68,68,0.1);
+      color: #f87171;
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 4px;
+      font-size: 0.68px;
+      font-weight: 600;
+    }
+
+    /* ─── Hosting Cards ─────────────────────────────────────────── */
+    .hosting-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 28px 24px;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .hosting-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(99,102,241,0.15);
+      border-color: rgba(99,102,241,0.3);
+    }
+    .hosting-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+    .hosting-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 4px;
+    }
+    .hosting-role {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    .hosting-desc { font-size: 0.85rem; color: #475569; line-height: 1.6; }
+    .hosting-features { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .hosting-feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+    .hosting-feature::before {
+      content: '✓';
+      color: #22c55e;
+      font-weight: 700;
+      font-size: 0.75rem;
+    }
+
+    /* ─── Roadmap ───────────────────────────────────────────────── */
+    .roadmap-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 28px 24px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .roadmap-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(99,102,241,0.12);
+    }
+    .roadmap-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+    .roadmap-v1::before { background: linear-gradient(90deg, #22c55e, #16a34a); }
+    .roadmap-v2::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+    .roadmap-v3::before { background: linear-gradient(90deg, #a855f7, #ec4899); }
+    .roadmap-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .roadmap-badge-green  { background: rgba(34,197,94,0.15);  color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+    .roadmap-badge-indigo { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3); }
+    .roadmap-badge-purple { background: rgba(168,85,247,0.15); color: #d8b4fe; border: 1px solid rgba(168,85,247,0.3); }
+    .roadmap-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 6px;
+    }
+    .roadmap-subtitle { font-size: 0.82rem; color: #475569; margin-bottom: 20px; }
+    .roadmap-features { display: flex; flex-direction: column; gap: 10px; }
+    .roadmap-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .roadmap-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .check-green  { background: rgba(34,197,94,0.15);  color: #86efac; }
+    .check-indigo { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+    .check-purple { background: rgba(168,85,247,0.15); color: #d8b4fe; }
+
+    /* ─── Divider ───────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #1e293b, transparent);
+      margin: 0;
+    }
+
+    /* ─── Footer ────────────────────────────────────────────────── */
+    footer {
+      background: #030712;
+      border-top: 1px solid #0f172a;
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .footer-logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .footer-copy { font-size: 0.82rem; color: #334155; }
+    .footer-copy span { color: #475569; }
+
+    /* ─── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .flows-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: 1fr; }
+      .hero-stats { gap: 24px; }
+      section { padding: 56px 0; }
+      .section-title { font-size: 1.5rem; }
+      .api-table th:nth-child(4),
+      .api-table td:nth-child(4) { display: none; }
+    }
+    @media (max-width: 480px) {
+      .hero-title { letter-spacing: -1px; }
+      .hero-badges { gap: 8px; }
+      .badge { font-size: 0.72rem; padding: 6px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       NAVBAR
+  ═══════════════════════════════════════════════════════════ -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="logo">⬡ Kwisoko</div>
+      <ul class="nav-links">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#structure">Structure</a></li>
+        <li><a href="#flows">Flows</a></li>
+        <li><a href="#api">API</a></li>
+        <li><a href="#hosting">Hosting</a></li>
+        <li><a href="#roadmap">Roadmap <span class="nav-badge">v3</span></a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       HERO — #overview
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="overview" style="padding:0;">
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-glow"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-dot"></span>
+          Full-Stack Marketplace Platform
+        </div>
+        <h1 class="hero-title">Kwisoko Marketplace</h1>
+        <p class="hero-subtitle">Where buyers and sellers meet — built for Rwanda and beyond</p>
+        <div class="hero-badges">
+          <span class="badge badge-indigo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.572 0c-.176 0-.31.001-.358.007a19.76 19.76 0 0 1-.364.033C7.443.346 4.25 2.185 2.228 5.012a11.875 11.875 0 0 0-2.119 5.243c-.096.659-.108.854-.108 1.747s.012 1.089.108 1.748c.652 4.506 3.86 8.292 8.209 9.695.779.25 1.6.422 2.534.525.363.04 1.935.04 2.299 0 1.611-.178 2.977-.577 4.323-1.264.207-.106.247-.134.219-.158-.02-.013-.9-1.193-1.955-2.62l-1.919-2.592-2.404-3.558a338.739 338.739 0 0 0-2.422-3.556c-.009-.002-.018 1.579-.023 3.51-.007 3.38-.01 3.515-.052 3.595a.426.426 0 0 1-.206.214c-.075.037-.14.044-.495.044H7.81l-.108-.068a.438.438 0 0 1-.157-.171l-.05-.106.006-4.703.007-4.705.072-.092a.645.645 0 0 1 .174-.143c.096-.047.134-.051.54-.051.478 0 .558.018.682.154.035.038 1.337 1.999 2.895 4.361a10760.433 10760.433 0 0 0 4.735 7.17l1.9 2.879.096-.063a12.317 12.317 0 0 0 2.466-2.163 11.944 11.944 0 0 0 2.824-6.134c.096-.66.108-.854.108-1.748 0-.893-.012-1.088-.108-1.747-.652-4.506-3.859-8.292-8.208-9.695a12.597 12.597 0 0 0-2.499-.523A33.119 33.119 0 0 0 11.573 0zm4.069 7.217c.347 0 .408.005.486.047a.473.473 0 0 1 .237.277c.018.06.023 1.365.018 4.304l-.006 4.218-.744-1.14-.746-1.14v-3.066c0-1.982.01-3.097.023-3.15a.478.478 0 0 1 .233-.296c.096-.05.13-.054.5-.054z"/></svg>
+            Next.js 14
+          </span>
+          <span class="badge badge-red">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14.131.047c-.173 0-.334.037-.483.087.316.21.49.49.576.806.007.028.013.056.018.084a1.96 1.96 0 0 1-.018.986c-.148.486-.556.895-1.075 1.075-.52.18-1.09.12-1.56-.16-.47-.28-.78-.76-.83-1.29-.05-.53.16-1.06.56-1.41C10.47.04 9.05.29 7.8.87 6.55 1.45 5.5 2.35 4.73 3.47c-.77 1.12-1.22 2.44-1.27 3.8-.05 1.36.3 2.71.99 3.88.69 1.17 1.7 2.13 2.9 2.77 1.2.64 2.56.94 3.92.87 1.36-.07 2.68-.51 3.8-1.27 1.12-.76 2.01-1.82 2.57-3.06.56-1.24.77-2.62.6-3.97-.17-1.35-.67-2.64-1.46-3.73-.79-1.09-1.86-1.96-3.1-2.52-.62-.28-1.27-.46-1.94-.54-.33-.04-.66-.06-.99-.06zm-2.13 4.3c.17 0 .34.04.49.12.15.08.28.2.37.35.09.15.14.32.14.5 0 .18-.05.35-.14.5-.09.15-.22.27-.37.35-.15.08-.32.12-.49.12-.17 0-.34-.04-.49-.12-.15-.08-.28-.2-.37-.35-.09-.15-.14-.32-.14-.5 0-.18.05-.35.14-.5.09-.15.22-.27.37-.35.15-.08.32-.12.49-.12z"/></svg>
+            NestJS
+          </span>
+          <span class="badge badge-blue">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.128 0a10.134 10.134 0 0 0-2.755.403 11.34 11.34 0 0 0-1.006.3c-.114.042-.22.085-.33.128a9.29 9.29 0 0 0-.963.437 9.897 9.897 0 0 0-1.896 1.375 9.52 9.52 0 0 0-.65.706 9.85 9.85 0 0 0-.524.733 9.947 9.947 0 0 0-.39.71 9.9 9.9 0 0 0-.26.6 9.87 9.87 0 0 0-.13.38 9.9 9.9 0 0 0-.1.38 9.87 9.87 0 0 0-.07.38 9.9 9.9 0 0 0-.04.38 9.87 9.87 0 0 0-.01.38v.38a9.9 9.9 0 0 0 .01.38 9.87 9.87 0 0 0 .04.38 9.9 9.9 0 0 0 .07.38 9.87 9.87 0 0 0 .1.38 9.9 9.9 0 0 0 .13.38 9.87 9.87 0 0 0 .26.6 9.9 9.9 0 0 0 .39.71 9.85 9.85 0 0 0 .524.733 9.52 9.52 0 0 0 .65.706 9.897 9.897 0 0 0 1.896 1.375 9.29 9.29 0 0 0 .963.437c.11.043.216.086.33.128.32.115.657.22 1.006.3a10.134 10.134 0 0 0 2.755.403 10.134 10.134 0 0 0 2.755-.403 11.34 11.34 0 0 0 1.006-.3c.114-.042.22-.085.33-.128a9.29 9.29 0 0 0 .963-.437 9.897 9.897 0 0 0 1.896-1.375 9.52 9.52 0 0 0 .65-.706 9.85 9.85 0 0 0 .524-.733 9.947 9.947 0 0 0 .39-.71 9.9 9.9 0 0 0 .26-.6 9.87 9.87 0 0 0 .13-.38 9.9 9.9 0 0 0 .1-.38 9.87 9.87 0 0 0 .07-.38 9.9 9.9 0 0 0 .04-.38 9.87 9.87 0 0 0 .01-.38v-.38a9.9 9.9 0 0 0-.01-.38 9.87 9.87 0 0 0-.04-.38 9.9 9.9 0 0 0-.07-.38 9.87 9.87 0 0 0-.1-.38 9.9 9.9 0 0 0-.13-.38 9.87 9.87 0 0 0-.26-.6 9.9 9.9 0 0 0-.39-.71 9.85 9.85 0 0 0-.524-.733 9.52 9.52 0 0 0-.65-.706 9.897 9.897 0 0 0-1.896-1.375 9.29 9.29 0 0 0-.963-.437c-.11-.043-.216-.086-.33-.128a11.34 11.34 0 0 0-1.006-.3A10.134 10.134 0 0 0 17.128 0zM12 7.5c2.485 0 4.5 2.015 4.5 4.5S14.485 16.5 12 16.5 7.5 14.485 7.5 12 9.515 7.5 12 7.5z"/></svg>
+            PostgreSQL
+          </span>
+          <span class="badge badge-teal">🔷 Prisma ORM</span>
+          <span class="badge badge-blue">🐳 Docker</span>
+          <span class="badge badge-amber">☁️ Cloudinary</span>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num">14+</div>
+            <div class="hero-stat-label">DB Tables</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">18+</div>
+            <div class="hero-stat-label">API Endpoints</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">3</div>
+            <div class="hero-stat-label">User Roles</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">v3</div>
+            <div class="hero-stat-label">Roadmap</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
